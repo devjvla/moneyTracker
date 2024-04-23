@@ -1,0 +1,92 @@
+const users = [
+  {
+    _id: "1",
+    first_name: "Kobe",
+    last_name: "Bryant",
+    email_address: "kbryant@nba.com",
+    password: "password1",
+  },
+  {
+    _id: "2",
+    first_name: "Stephen",
+    last_name: "Curry",
+    email_address: "scurry@nba.com",
+    password: "password2",
+  },
+  {
+    _id: "3",
+    first_name: "Dwyane",
+    last_name: "Wade",
+    email_address: "dwade@nba.com",
+    password: "password3",
+  },
+  {
+    _id: "4",
+    first_name: "LeBron",
+    last_name: "James",
+    email_address: "ljames@nba.com",
+    password: "password4",
+  },
+  {
+    _id: "5",
+    first_name: "Dirk",
+    last_name: "Nowitzki",
+    email_address: "dnowitzki@nba.com",
+    password: "password5",
+  },
+]
+
+const transactions = [
+  {
+    _id: "1",
+    userId: 1,
+    description: "Transaction 1",
+    paymentType: "CASH",
+    category: "Category One",
+    amount: 100.0,
+    location: "Location One",
+    date: "2024-01-01",
+  },
+  {
+    _id: "2",
+    userId: 2,
+    description: "Transaction 2",
+    paymentType: "CARD",
+    category: "Category Two",
+    amount: 200.0,
+    location: "Location Two",
+    date: "2024-02-02",
+  },
+  {
+    _id: "3",
+    userId: 3,
+    description: "Transaction 3",
+    paymentType: "CASH",
+    category: "Category Three",
+    amount: 300.0,
+    location: "Location Three",
+    date: "2024-03-03",
+  },
+  {
+    _id: "4",
+    userId: 4,
+    description: "Transaction 4",
+    paymentType: "CARD",
+    category: "Category Four",
+    amount: 400.0,
+    location: "Location Four",
+    date: "2024-04-04",
+  },
+  {
+    _id: "5",
+    userId: 5,
+    description: "Transaction 5",
+    paymentType: "CASH",
+    category: "Category Five",
+    amount: 500.0,
+    location: "Location Five",
+    date: "2024-05-05",
+  },
+]
+
+export { users, transactions };
