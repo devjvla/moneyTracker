@@ -8,7 +8,7 @@ const userTypeDef = `#graphql
   }
 
   type Query {
-    users: [User!],
+    # users: [User!], // Removed because it's not needed for the application.
     authUser: User,
     user(userId: ID!) : User
   }
