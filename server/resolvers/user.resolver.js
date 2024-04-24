@@ -9,7 +9,7 @@ const userResolver = {
 
         return user;
       } catch (error) {
-        console.log(`User Resolver | Query | authUser Error | ${error}`);
+        console.log(`User Resolver | Query | authUser | ${error}`);
         throw new Error(error.message || "An error occurred while authenticating user");
       }
     },
@@ -19,7 +19,7 @@ const userResolver = {
 
         return user;
       } catch (error) {
-        console.log(`User Resolver | Query | User Error | ${error}`);
+        console.log(`User Resolver | Query | User | ${error}`);
         throw new Error(error.message || "An error occurred while fetching user record.");
       }
     },
@@ -27,11 +27,9 @@ const userResolver = {
   Mutation: {
     signUp: async (_, { input }, context) => {
       try {
-        const { email_address, first_name, last_name, password } = context;
+        const { email_address, first_name, last_name, password } = input;
 
-        if (!email_address || !first_name || !last_name || !password) {
-          throw new Error("Missing required fields.");
-        }
+        if (!email_address || !first_name || !last_name || !password) throw new Error("Missing required fields.");
 
         const is_existing_email = User.findOne({ email_address });
 
@@ -52,7 +50,7 @@ const userResolver = {
 
         return new_user;
       } catch (error) {
-        console.log(`User Resolver | Mutation | signUp Error | ${error}`);
+        console.log(`User Resolver | Mutation | signUp | ${error}`);
         throw new Error(error.message || "An error occurred during sign up");
       }
     },
@@ -65,7 +63,7 @@ const userResolver = {
 
         return user;
       } catch (error) {
-        console.log(`User Resolver | Mutation | signIn Error | ${error}`);
+        console.log(`User Resolver | Mutation | signIn | ${error}`);
         throw new Error(error.message || "An error occurred during sign in");
       }
     },
@@ -81,7 +79,7 @@ const userResolver = {
 
         return { message: "You are signed out" }
       } catch (error) {
-        console.log(`User Resolver | Mutation | signOut Error | ${error}`);
+        console.log(`User Resolver | Mutation | signOut | ${error}`);
         throw new Error(error.message || "An error occurred during sign out")
       }
     }
