@@ -1,4 +1,9 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
+import { Toaster } from "react-hot-toast";
+
+/* GraphQL */
+import { useQuery } from '@apollo/client';
+import { getAuthUser } from "./graphql/queries/user.query";
 
 /* Shared Components */
 import Header from "./components/ui/Header"
@@ -11,18 +16,23 @@ import TransactionPage from "./pages/TransactionPage"
 import NotFound from "./pages/NotFound"
 
 function App() {
-  const authUser = false;
+  /* GraphQL Queries */
+  const { loading, data } = useQuery(getAuthUser);
+
+  if(loading) return null;
 
   return (
     <>
-      { authUser && <Header /> }
+      { data?.authUser && <Header /> }
+
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/signin" element={<SignInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/transaction/:id" element={<TransactionPage />} />
+        <Route path="/" element={ data?.authUser ? <HomePage /> : <Navigate to="/signin" /> } />
+        <Route path="/signin" element={ !data?.authUser ? <SignInPage /> : <Navigate to="/" /> } />
+        <Route path="/signup" element={ !data?.authUser ? <SignUpPage /> : <Navigate to="/" /> } />
+        <Route path="/transaction/:id" element={ data?.authUser ? <TransactionPage /> : <Navigate to="/" /> } />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster />
     </>
   )
 }

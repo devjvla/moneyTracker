@@ -1,26 +1,46 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
+
+/* GraphQL */
+import { useMutation } from "@apollo/client";
+import { userSignIn } from "../graphql/mutations/user.mutation";
 
 import InputField from "../components/InputField";
 import SubmitButton from "../components/SubmitButton";
 
 const LoginPage = () => {
-	const [loginData, setLoginData] = useState({
+	const [signInData, setSignInData] = useState({
 		email_address: "",
 		password: "",
 	});
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-		setLoginData((prevData) => ({
+		setSignInData((prevData) => ({
 			...prevData,
 			[name]: value,
 		}));
 	};
 
-	const handleSubmit = (e) => {
+	const [signIn, { loading }] = useMutation(userSignIn, {
+		refetchQueries: ["GetAuthenticatedUser"],
+	})
+
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log(loginData);
+		console.log(signInData);
+
+		try {
+			await signIn({
+				variables: {
+					input: signInData
+				}
+			})
+		} catch (error) {
+			console.log("Client | Sign In: ", error);
+			toast.error(error.message);
+		}
 	};
 
 	return (
@@ -37,7 +57,7 @@ const LoginPage = () => {
 								label='Email Address'
 								id='email_address'
 								name='email_address'
-								value={loginData.email_address}
+								value={setSignInData.email_address}
                 autoFocus={true}
 								onChange={handleChange}
 							/>
@@ -47,11 +67,11 @@ const LoginPage = () => {
 								id='password'
 								name='password'
 								type='password'
-								value={loginData.password}
+								value={setSignInData.password}
 								onChange={handleChange}
 							/>
               
-              <SubmitButton text="Sign In" />
+              <SubmitButton text="Sign In" isLoading={loading} />
 						</form>
 						<div className='mt-4 text-sm text-gray-600 text-center'>
 							<p>

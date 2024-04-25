@@ -23,9 +23,9 @@ export const configurePassport = async () => {
   });
 
   passport.use(
-    new GraphQLLocalStrategy(async (email_address, password, done) => {
+    new GraphQLLocalStrategy(async (email, password, done) => {
       try {
-        const user = await User.findOne({ email_address });
+        const user = await User.findOne({ email });
 
         if(!user) {
           throw new Error("Incorrect email address or password");
