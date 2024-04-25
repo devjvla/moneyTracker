@@ -31,7 +31,7 @@ const userResolver = {
 
         if (!email_address || !first_name || !last_name || !password) throw new Error("Missing required fields.");
 
-        const is_existing_email = User.findOne({ email_address });
+        const is_existing_email = await User.findOne({ email_address });
 
         if (is_existing_email) {
           throw new Error("Email Address is already registered.");
@@ -71,11 +71,11 @@ const userResolver = {
       try {
         await context.logout();
 
-        req.session.destroy(err => {
+        context.req.session.destroy(err => {
           if(err) throw err;
         });
 
-        res.clearCookie("connect.sid");
+        context.res.clearCookie("connect.sid");
 
         return { message: "You are signed out" }
       } catch (error) {

@@ -1,5 +1,10 @@
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import toast from "react-hot-toast";
+
+/* GraphQL */
+import { useMutation } from "@apollo/client";
+import { userSignOut } from "../graphql/mutations/user.mutation";
 
 import Cards from "../components/Cards";
 import TransactionForm from "../components/TransactionForm";
@@ -25,11 +30,17 @@ const HomePage = () => {
 		],
 	};
 
-	const handleLogout = () => {
-		console.log("Logging out...");
-	};
+	const [signOut, { loading }] = useMutation(userSignOut, {
+		refetchQueries: ["GetAuthenticatedUser"]
+	});
 
-	const loading = false;
+	const handleLogout = async () => {
+		try {
+			await signOut();
+		} catch (error) {
+			toast.error(error.message);
+		}
+	};
 
 	return (
 		<>

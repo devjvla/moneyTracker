@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+
+/* GraphQL */
+import { useMutation } from "@apollo/client";
+import { userSignUp } from "../graphql/mutations/user.mutation";
 
 import InputField from "../components/InputField";
 import SubmitButton from "../components/SubmitButton";
@@ -27,10 +32,25 @@ const SignUpPage = () => {
 			}));
 		}
 	};
+	
+	const [signUp, { loading }] = useMutation(userSignUp, {
+		refetchQueries: ["GetAuthenticatedUser"],
+	});
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log(signUpData);
+
+		try {
+			await signUp({
+				variables: {
+					input: signUpData
+				}
+			})
+		} catch (error) {
+			console.log("Client | Sign Up: ", error);
+			toast.error(error.message);
+		}
 	};
 
 	return (
@@ -78,7 +98,7 @@ const SignUpPage = () => {
 								onChange={handleChange}
 							/>
               
-              <SubmitButton text="Sign Up" />
+              <SubmitButton text="Sign Up" isLoading={loading} />
 						</form>
 						<div className='mt-4 text-sm text-gray-600 text-center'>
 							<p>
