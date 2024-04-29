@@ -5,12 +5,13 @@ const userTypeDef = `#graphql
     last_name: String!
     email_address: String!
     password: String!
+    transactions: [Transaction!]
   }
 
   type Query {
     # users: [User!], // Removed because it's not needed for the application.
-    authUser: User,
-    user(userId: ID!) : User
+    authUser: User
+    user(userId: ID!): User
   }
 
   type Mutation {

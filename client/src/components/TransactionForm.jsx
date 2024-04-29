@@ -1,4 +1,17 @@
+import toast from "react-hot-toast";
+import SubmitButton from "./SubmitButton";
+
+/* Graph QL */
+import { useMutation } from "@apollo/client";
+import { CREATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
+
 const TransactionForm = () => {
+	const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
+		refetchQueries: ["GetTransactions"],
+	});
+
+	const dateToday = new Date().toLocaleDateString('en-CA');
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -8,11 +21,24 @@ const TransactionForm = () => {
 			description: formData.get("description"),
 			paymentType: formData.get("paymentType"),
 			category: formData.get("category"),
-			amount: parseFloat(formData.get("amount")),
+			amount: formData.get("amount") != "" ? parseFloat(formData.get("amount")) : 0,
 			location: formData.get("location"),
 			date: formData.get("date"),
 		};
-		console.log("transactionData", transactionData);
+
+		try {
+			const { data } = await createTransaction({ variables: { input: transactionData }});
+
+			if(!Object.keys(data.createTransaction).length) {
+				throw new Error("Failed to create transaction");
+			}
+
+			form.reset();
+			toast.success("Transaction saved successfully!");
+		} catch (error) {
+			console.log("Client | Create Transaction: ", error);
+			toast.error(error.message);
+		}
 	};
 
 	return (
@@ -24,15 +50,14 @@ const TransactionForm = () => {
 						className='block uppercase tracking-wide text-white text-xs font-bold mb-2'
 						htmlFor='description'
 					>
-						Transaction
+						Description
 					</label>
 					<input
 						className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
 						id='description'
 						name='description'
 						type='text'
-						required
-						placeholder='Rent, Groceries, Salary, etc.'
+						autoFocus={true}
 					/>
 				</div>
 			</div>
@@ -99,14 +124,14 @@ const TransactionForm = () => {
 				{/* AMOUNT */}
 				<div className='w-full flex-1 mb-6 md:mb-0'>
 					<label className='block uppercase text-white text-xs font-bold mb-2' htmlFor='amount'>
-						Amount($)
+						Amount(Php)
 					</label>
 					<input
 						className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
 						id='amount'
 						name='amount'
 						type='number'
-						placeholder='150'
+						min='1'
 					/>
 				</div>
 			</div>
@@ -125,7 +150,6 @@ const TransactionForm = () => {
 						id='location'
 						name='location'
 						type='text'
-						placeholder='New York'
 					/>
 				</div>
 
@@ -138,21 +162,14 @@ const TransactionForm = () => {
 						type='date'
 						name='date'
 						id='date'
-						className='appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none
-						 focus:bg-white'
-						placeholder='Select date'
+						className='appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none focus:bg-white'
+						max={dateToday}
+						defaultValue={dateToday}
 					/>
 				</div>
 			</div>
 			{/* SUBMIT BUTTON */}
-			<button
-				className='text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
-          from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600
-						disabled:opacity-70 disabled:cursor-not-allowed'
-				type='submit'
-			>
-				Add Transaction
-			</button>
+			<SubmitButton text="Add Transaction" isLoading={loading}/>
 		</form>
 	);
 };

@@ -1,6 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import moment from "moment";
+import toast from "react-hot-toast";
+
+/* GraphQL */
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_TRANSACTION } from "../graphql/queries/transaction.query";
+import { UPDATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
+
+import SubmitButton from "../components/SubmitButton";
 
 const TransactionPage = () => {
+	const { id } = useParams();
+
+	let { data } = useQuery(GET_TRANSACTION, { variables: { id } });
+	
 	const [formData, setFormData] = useState({
 		description: "",
 		paymentType: "",
@@ -9,11 +23,43 @@ const TransactionPage = () => {
 		location: "",
 		date: "",
 	});
+	
+	const dateToday = new Date().toLocaleDateString('en-CA');
+
+	useEffect(() => {
+		if(data){
+			// eslint-disable-next-line no-unused-vars
+			let { __typename, _id, ...transaction } = data.transaction;
+
+			let date = transaction.date;
+			date = new Date(parseInt(date));
+			date = moment(date).format("YYYY-MM-DD");
+
+			setFormData({ ...transaction, date, transactionId: _id });
+		}
+	}, [data]);
+	
+	const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log("formData", formData);
+
+		try {
+			const amount = parseFloat(formData.amount);
+			await updateTransaction({ variables: { 
+				input: { 
+					...formData, amount
+				}
+			}});
+
+			toast.success("Transaction updated successfully!");
+		} catch (error) {
+			console.log("Client | Update Transaction: ", error);
+			toast.error(error.message);
+		}
 	};
+
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
 		setFormData((prevFormData) => ({
@@ -44,7 +90,6 @@ const TransactionPage = () => {
 							id='description'
 							name='description'
 							type='text'
-							placeholder='Rent, Groceries, Salary, etc.'
 							value={formData.description}
 							onChange={handleInputChange}
 						/>
@@ -117,14 +162,13 @@ const TransactionPage = () => {
 					{/* AMOUNT */}
 					<div className='w-full flex-1 mb-6 md:mb-0'>
 						<label className='block uppercase text-white text-xs font-bold mb-2' htmlFor='amount'>
-							Amount($)
+							Amount(Php)
 						</label>
 						<input
 							className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
 							id='amount'
 							name='amount'
 							type='number'
-							placeholder='150'
 							value={formData.amount}
 							onChange={handleInputChange}
 						/>
@@ -145,7 +189,6 @@ const TransactionPage = () => {
 							id='location'
 							name='location'
 							type='text'
-							placeholder='New York'
 							value={formData.location}
 							onChange={handleInputChange}
 						/>
@@ -165,20 +208,14 @@ const TransactionPage = () => {
 							id='date'
 							className='appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none
 						 focus:bg-white'
-							placeholder='Select date'
+							max={dateToday}
 							value={formData.date}
 							onChange={handleInputChange}
 						/>
 					</div>
 				</div>
 				{/* SUBMIT BUTTON */}
-				<button
-					className='text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
-          from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600'
-					type='submit'
-				>
-					Update Transaction
-				</button>
+				<SubmitButton text="Update Transaction" isLoading={loading} />
 			</form>
 		</div>
 	);

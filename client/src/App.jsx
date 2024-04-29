@@ -3,7 +3,7 @@ import { Toaster } from "react-hot-toast";
 
 /* GraphQL */
 import { useQuery } from '@apollo/client';
-import { getAuthUser } from "./graphql/queries/user.query";
+import { GET_AUTH_USER } from "./graphql/queries/user.query";
 
 /* Shared Components */
 import Header from "./components/ui/Header"
@@ -17,7 +17,7 @@ import NotFound from "./pages/NotFound"
 
 function App() {
   /* GraphQL Queries */
-  const { loading, data } = useQuery(getAuthUser);
+  const { loading, data } = useQuery(GET_AUTH_USER);
 
   if(loading) return null;
 

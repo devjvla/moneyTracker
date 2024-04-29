@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 /* GraphQL */
 import { useMutation } from "@apollo/client";
-import { userSignUp } from "../graphql/mutations/user.mutation";
+import { USER_SIGNUP } from "../graphql/mutations/user.mutation";
 
 import InputField from "../components/InputField";
 import SubmitButton from "../components/SubmitButton";
@@ -33,7 +33,7 @@ const SignUpPage = () => {
 		}
 	};
 	
-	const [signUp, { loading }] = useMutation(userSignUp, {
+	const [signUp, { loading }] = useMutation(USER_SIGNUP, {
 		refetchQueries: ["GetAuthenticatedUser"],
 	});
 
@@ -42,11 +42,7 @@ const SignUpPage = () => {
 		console.log(signUpData);
 
 		try {
-			await signUp({
-				variables: {
-					input: signUpData
-				}
-			})
+			await signUp({ variables: { input: signUpData }});
 		} catch (error) {
 			console.log("Client | Sign Up: ", error);
 			toast.error(error.message);

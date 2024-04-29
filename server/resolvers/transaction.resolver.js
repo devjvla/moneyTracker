@@ -7,7 +7,7 @@ const transactionResolver = {
         if(!context.getUser()) throw new Error("User Unauthorized");
 
         const userId = await context.getUser()._id;
-        const transactions = await Transaction.find({ userId });
+        const transactions = await Transaction.find({ userId }).sort({ date: -1 });
 
         return transactions;
       } catch (error) {
@@ -19,7 +19,7 @@ const transactionResolver = {
       try {
         if(!context.getUser()) throw new Error("User Unauthorized");
   
-        const transaction = await Transaction.find({ transactionId });
+        const transaction = await Transaction.findById(transactionId);
   
         return transaction;
       } catch (error) {
@@ -49,6 +49,7 @@ const transactionResolver = {
       }
     },
     updateTransaction: async (_, { input }, context) => {
+      console.log(input);
       try {
         if(!context.getUser()) throw new Error("User Unauthorized");
 
