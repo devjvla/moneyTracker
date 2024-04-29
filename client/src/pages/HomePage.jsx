@@ -4,9 +4,9 @@ import toast from "react-hot-toast";
 
 /* GraphQL */
 import { useMutation } from "@apollo/client";
-import { userSignOut } from "../graphql/mutations/user.mutation";
+import { USER_SIGNOUT } from "../graphql/mutations/user.mutation";
 
-import Cards from "../components/Cards";
+import Cards from "../components/TransactionHistory";
 import TransactionForm from "../components/TransactionForm";
 
 import { MdLogout } from "react-icons/md";
@@ -30,7 +30,7 @@ const HomePage = () => {
 		],
 	};
 
-	const [signOut, { loading }] = useMutation(userSignOut, {
+	const [signOut, { loading }] = useMutation(USER_SIGNOUT, {
 		refetchQueries: ["GetAuthenticatedUser"]
 	});
 

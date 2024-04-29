@@ -4,15 +4,15 @@ import toast from "react-hot-toast";
 
 /* GraphQL */
 import { useMutation } from "@apollo/client";
-import { userSignIn } from "../graphql/mutations/user.mutation";
+import { USER_SIGNIN } from "../graphql/mutations/user.mutation";
 
 import InputField from "../components/InputField";
 import SubmitButton from "../components/SubmitButton";
 
 const LoginPage = () => {
 	const [signInData, setSignInData] = useState({
-		email_address: "",
-		password: "",
+		email_address: "dev.jvla@gmail.com",
+		password: "123!@#qweQWE",
 	});
 
 	const handleChange = (e) => {
@@ -23,7 +23,7 @@ const LoginPage = () => {
 		}));
 	};
 
-	const [signIn, { loading }] = useMutation(userSignIn, {
+	const [signIn, { loading }] = useMutation(USER_SIGNIN, {
 		refetchQueries: ["GetAuthenticatedUser"],
 	})
 
@@ -32,11 +32,7 @@ const LoginPage = () => {
 		console.log(signInData);
 
 		try {
-			await signIn({
-				variables: {
-					input: signInData
-				}
-			})
+			await signIn({ variables: { input: signInData }});
 		} catch (error) {
 			console.log("Client | Sign In: ", error);
 			toast.error(error.message);
@@ -57,7 +53,7 @@ const LoginPage = () => {
 								label='Email Address'
 								id='email_address'
 								name='email_address'
-								value={setSignInData.email_address}
+								value={signInData.email_address}
                 autoFocus={true}
 								onChange={handleChange}
 							/>
@@ -67,7 +63,7 @@ const LoginPage = () => {
 								id='password'
 								name='password'
 								type='password'
-								value={setSignInData.password}
+								value={signInData.password}
 								onChange={handleChange}
 							/>
               
