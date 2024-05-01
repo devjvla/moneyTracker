@@ -7,7 +7,7 @@ import { CREATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
 
 const TransactionForm = () => {
 	const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
-		refetchQueries: ["GetTransactions"],
+		refetchQueries: ["GetTransactions", "GetCategoryStatistics"],
 	});
 
 	const dateToday = new Date().toLocaleDateString('en-CA');

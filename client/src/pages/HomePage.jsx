@@ -1,10 +1,12 @@
+import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import toast from "react-hot-toast";
 
 /* GraphQL */
-import { useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { USER_SIGNOUT } from "../graphql/mutations/user.mutation";
+import { GET_CATEGORY_STATISTICS } from "../graphql/queries/transaction.query";
 
 import Cards from "../components/TransactionHistory";
 import TransactionForm from "../components/TransactionForm";
@@ -14,25 +16,53 @@ import { MdLogout } from "react-icons/md";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const HomePage = () => {
-	const chartData = {
-		labels: ["Saving", "Expense", "Investment"],
-		datasets: [
-			{
-				label: "%",
-				data: [13, 8, 3],
-				backgroundColor: ["rgba(75, 192, 192)", "rgba(255, 99, 132)", "rgba(54, 162, 235)"],
-				borderColor: ["rgba(75, 192, 192)", "rgba(255, 99, 132)", "rgba(54, 162, 235, 1)"],
-				// borderWidth: 1,
-				// borderRadius: 30,
-				// spacing: 10,
-				// cutout: 130,
-			},
-		],
-	};
-
+	const { data } = useQuery(GET_CATEGORY_STATISTICS);
+	
 	const [signOut, { loading, client }] = useMutation(USER_SIGNOUT, {
 		refetchQueries: ["GetAuthenticatedUser"]
 	});
+	
+	const [chartData, setChartData] = useState({
+		labels: [],
+		datasets: [{
+			label: 'Php',
+			data: [],
+			backgroundColor: [],
+			borderColor: []
+		}]
+	});
+
+	useEffect(() => {
+		if(data?.categoryStatistics) {
+			const backgroundColor = [];
+			const borderColor = [];
+
+			const categories = data.categoryStatistics.map(stat => stat.category[0].toUpperCase() + stat.category.slice(1));
+			const totalAmounts = data.categoryStatistics.map(stat => stat.totalAmount);
+
+			categories.forEach(category => {
+				if(category === "Saving") {
+					backgroundColor.push("rgba(75, 192, 192)");
+					borderColor.push("rgba(75, 192, 192)");
+				} else if(category === "Expense") {
+					backgroundColor.push("rgba(255, 99, 132)");
+					borderColor.push("rgba(255, 99, 132)");
+				} else if(category === "Investment") {
+					backgroundColor.push("rgba(54, 162, 235)");
+					borderColor.push("rgba(54, 162, 235)");
+				}
+			});
+
+			setChartData(prev => ({
+				labels: categories,
+				datasets: [{
+					...prev.datasets,
+					backgroundColor, borderColor,
+					data: totalAmounts,
+				}]	
+			}));
+		}
+	}, [data]);
 
 	const handleLogout = async () => {
 		try {
@@ -60,10 +90,11 @@ const HomePage = () => {
 					{loading && <div className='w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin'></div>}
 				</div>
 				<div className='flex flex-wrap w-full justify-center items-center gap-6'>
-					<div className='h-[330px] w-[330px] md:h-[360px] md:w-[360px]  '>
-						<Pie data={chartData} />
-					</div>
-
+					{ data?.categoryStatistics.length > 0 && (
+						<div className='h-[330px] w-[330px] md:h-[360px] md:w-[360px]'>
+							<Pie data={chartData} />
+						</div>
+					)}
 					<TransactionForm />
 				</div>
 				<Cards />

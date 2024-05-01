@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 /* GraphQL */
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_TRANSACTION } from "../graphql/queries/transaction.query";
+import { GET_CATEGORY_STATISTICS, GET_TRANSACTION } from "../graphql/queries/transaction.query";
 import { UPDATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
 
 import SubmitButton from "../components/SubmitButton";
@@ -39,7 +39,9 @@ const TransactionPage = () => {
 		}
 	}, [data]);
 	
-	const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION);
+	const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION, {
+		refetchQueries: [{ query: GET_CATEGORY_STATISTICS }]
+	});
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -110,7 +112,7 @@ const TransactionPage = () => {
 								id='paymentType'
 								name='paymentType'
 								onChange={handleInputChange}
-								defaultValue={formData.paymentType}
+								value={formData.paymentType}
 							>
 								<option value={"card"}>Card</option>
 								<option value={"cash"}>Cash</option>
@@ -141,7 +143,7 @@ const TransactionPage = () => {
 								id='category'
 								name='category'
 								onChange={handleInputChange}
-								defaultValue={formData.category}
+								value={formData.category}
 							>
 								<option value={"saving"}>Saving</option>
 								<option value={"expense"}>Expense</option>
