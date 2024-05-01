@@ -29,7 +29,7 @@ const Card = ({ transaction }) => {
 	date = new Date(parseInt(date));
 
 	const [deleteTransaction, { loading }] = useMutation(DELETE_TRANSACTION, {
-		refetchQueries: ["GetTransactions"],
+		refetchQueries: ["GetTransactions", "GetCategoryStatistics"],
 	});
 
 	const handleDeleteTransaction = async (e, transactionId) => {

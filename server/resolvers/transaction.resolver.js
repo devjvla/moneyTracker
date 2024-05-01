@@ -27,7 +27,32 @@ const transactionResolver = {
         throw new Error(error.message || "An error occurred while fetching a transaction"); 
       }
     },
-    // TODO: Add query for categoryStatistics
+    categoryStatistics: async (_, __, context) => {
+      try {
+        if(!context.getUser()) throw new Error("User Unauthorized");
+
+        const userId = context.getUser()._id;
+        const transactions = await Transaction.aggregate([
+          { "$match": { userId } },
+          { "$group": {
+              "_id": "$category",
+              "totalAmount": { "$sum": "$amount" }
+            }
+          },
+          { "$project": {
+              "category": "$_id",
+              totalAmount: 1,
+              _id: 0
+            }
+          }
+        ]);
+
+        return transactions;
+      } catch (error) {
+        console.log(`Transaction Resolver | Query | categoryStatistics | ${error}`);
+        throw new Error(error.message || "An error occurred while fetching a category statistics"); 
+      }
+    }
   },
   Mutation: {
     createTransaction: async (_, { input }, context) => {
